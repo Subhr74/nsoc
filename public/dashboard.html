@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Node SOC Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav>
+        <h2>🛡️ SOC MONITOR [NODE.JS]</h2>
+        <a href="/" style="color:white">Logout</a>
+    </nav>
+    <div class="container">
+        <div class="dashboard-grid">
+            <div class="card"><canvas id="threatChart" height="200"></canvas></div>
+            <div class="card">
+                <h3>System Alerts</h3>
+                <div id="alerts"></div>
+            </div>
+        </div>
+        <div class="card" style="margin-bottom: 20px; border: 1px dashed #3182ce;">
+    <h3>🚀 SOC Traffic Simulator</h3>
+    <p>Click a button to simulate an incoming network request:</p>
+    <button onclick="sendSimulated('Normal')" style="background: #22c55e;">Send Normal Traffic</button>
+    <button onclick="sendSimulated('SQLi')" style="background: #ef4444;">Simulate SQL Injection</button>
+    <button onclick="sendSimulated('XSS')" style="background: #f59e0b;">Simulate XSS Attack</button>
+</div>
+        <div class="card">
+            <h3>Traffic Logs</h3>
+            <table>
+                <thead>
+                    <tr><th>Time</th><th>IP</th><th>Payload</th><th>Threat</th><th>Severity</th><th>Action</th></tr>
+                </thead>
+                <tbody id="log-body"></tbody>
+            </table>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>
