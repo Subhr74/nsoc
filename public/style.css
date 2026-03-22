@@ -1,15 +1,362 @@
-body { background: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; margin: 0; }
-.container { padding: 30px; }
-nav { background: #1e293b; padding: 1rem 2rem; display: flex; justify-content: space-between; border-bottom: 2px solid #334155; }
+/* ============================================================
+   SOC Nexus — Shared Design System
+   Dark SOC theme with neon accents
+   ============================================================ */
 
-.dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-.card { background: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid #334155; }
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;500;600;700;900&display=swap');
 
-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-th, td { text-align: left; padding: 12px; border-bottom: 1px solid #334155; }
-.High { color: #ef4444; font-weight: bold; }
-.Medium { color: #fbbf24; }
-.Blocked { opacity: 0.4; text-decoration: line-through; }
+/* ── CSS Variables ────────────────────────────────────────── */
+:root {
+  --bg-primary:    #020b18;
+  --bg-secondary:  #050f20;
+  --bg-tertiary:   #07142a;
+  --bg-card:       rgba(7, 20, 42, 0.85);
+  --bg-card-hover: rgba(10, 28, 56, 0.9);
 
-button { background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
-input { display: block; width: 100%; margin: 10px 0; padding: 10px; background: #334155; border: none; color: white; }
+  --accent:        #00ff88;
+  --accent-dim:    rgba(0, 255, 136, 0.15);
+  --accent-glow:   rgba(0, 255, 136, 0.5);
+
+  --blue:          #00aaff;
+  --blue-dim:      rgba(0, 170, 255, 0.15);
+
+  --critical:      #ff3b3b;
+  --critical-dim:  rgba(255, 59, 59, 0.18);
+  --critical-glow: rgba(255, 59, 59, 0.6);
+
+  --high:          #ff7700;
+  --high-dim:      rgba(255, 119, 0, 0.18);
+
+  --medium:        #ffcc00;
+  --medium-dim:    rgba(255, 204, 0, 0.18);
+
+  --info:          #4488ff;
+  --info-dim:      rgba(68, 136, 255, 0.15);
+
+  --text-primary:  #e2ecff;
+  --text-secondary:#94a3b8;
+  --text-dim:      #4a6080;
+
+  --border:        rgba(0, 255, 136, 0.1);
+  --border-strong: rgba(0, 255, 136, 0.25);
+
+  --font-mono:     'Share Tech Mono', monospace;
+  --font-main:     'Exo 2', sans-serif;
+
+  --radius-sm:     3px;
+  --radius-md:     6px;
+  --radius-lg:     10px;
+
+  --shadow-card:   0 4px 24px rgba(0,0,0,0.4), 0 0 1px rgba(0,255,136,0.1);
+  --shadow-glow:   0 0 20px rgba(0,255,136,0.2);
+}
+
+/* ── Reset & Base ─────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Subtle noise texture overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.4;
+}
+
+/* ── Scrollbar ────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb {
+  background: rgba(0,255,136,0.2);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(0,255,136,0.4); }
+
+/* ── Typography ───────────────────────────────────────────── */
+h1, h2, h3, h4 { font-family: var(--font-main); font-weight: 700; }
+
+.mono { font-family: var(--font-mono); }
+
+/* ── Severity Badge ───────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.badge-CRITICAL {
+  background: var(--critical-dim);
+  color: var(--critical);
+  border: 1px solid rgba(255,59,59,0.4);
+  box-shadow: 0 0 8px rgba(255,59,59,0.3), inset 0 0 8px rgba(255,59,59,0.1);
+  animation: criticalPulse 1.5s ease-in-out infinite;
+}
+
+.badge-HIGH {
+  background: var(--high-dim);
+  color: var(--high);
+  border: 1px solid rgba(255,119,0,0.35);
+}
+
+.badge-MEDIUM {
+  background: var(--medium-dim);
+  color: var(--medium);
+  border: 1px solid rgba(255,204,0,0.3);
+}
+
+.badge-INFO {
+  background: var(--info-dim);
+  color: var(--info);
+  border: 1px solid rgba(68,136,255,0.3);
+}
+
+@keyframes criticalPulse {
+  0%,100% { box-shadow: 0 0 8px rgba(255,59,59,0.3),  inset 0 0 8px rgba(255,59,59,0.1); }
+  50%      { box-shadow: 0 0 18px rgba(255,59,59,0.7), inset 0 0 12px rgba(255,59,59,0.25); }
+}
+
+/* ── Row severity highlighting ────────────────────────────── */
+tr.row-CRITICAL {
+  background: rgba(255,59,59,0.06) !important;
+  border-left: 3px solid var(--critical);
+}
+tr.row-HIGH {
+  background: rgba(255,119,0,0.05) !important;
+  border-left: 3px solid var(--high);
+}
+tr.row-MEDIUM {
+  background: rgba(255,204,0,0.04) !important;
+  border-left: 3px solid var(--medium);
+}
+tr.row-INFO {
+  border-left: 3px solid var(--info);
+}
+
+/* ── Glow pulse animation (for map markers etc.) ──────────── */
+@keyframes glowPulse {
+  0%,100% { opacity: 0.7; transform: scale(1); }
+  50%      { opacity: 1;   transform: scale(1.15); }
+}
+
+@keyframes pulse {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0.3; }
+}
+
+@keyframes floatParticle {
+  0%   { transform: translateY(0)   rotate(0deg);   opacity: 0; }
+  10%  { opacity: 0.5; }
+  90%  { opacity: 0.5; }
+  100% { transform: translateY(-80px) rotate(360deg); opacity: 0; }
+}
+
+/* ── Card base ────────────────────────────────────────────── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(8px);
+  transition: border-color 0.3s ease;
+}
+
+.card:hover { border-color: var(--border-strong); }
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.card-title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--accent);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-body { padding: 16px 20px; }
+
+/* ── Button styles ────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border: 1px solid;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.btn-accent {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.btn-accent:hover {
+  background: var(--accent);
+  color: var(--bg-primary);
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+.btn-critical {
+  background: var(--critical-dim);
+  border-color: var(--critical);
+  color: var(--critical);
+}
+.btn-critical:hover {
+  background: var(--critical);
+  color: #fff;
+  box-shadow: 0 0 20px var(--critical-glow);
+}
+
+.btn-high {
+  background: var(--high-dim);
+  border-color: var(--high);
+  color: var(--high);
+}
+.btn-high:hover {
+  background: var(--high);
+  color: var(--bg-primary);
+  box-shadow: 0 0 20px rgba(255,119,0,0.5);
+}
+
+.btn-medium {
+  background: var(--medium-dim);
+  border-color: var(--medium);
+  color: var(--medium);
+}
+.btn-medium:hover {
+  background: var(--medium);
+  color: var(--bg-primary);
+  box-shadow: 0 0 20px rgba(255,204,0,0.5);
+}
+
+/* ── Stat chip ────────────────────────────────────────────── */
+.stat-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  background: rgba(0,255,136,0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  min-width: 80px;
+}
+
+.stat-chip .stat-value {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.stat-chip .stat-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+/* ── Live indicator ───────────────────────────────────────── */
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+  animation: pulse 1.2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+/* ── Table ────────────────────────────────────────────────── */
+.soc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.soc-table thead th {
+  padding: 10px 12px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  text-align: left;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,255,136,0.02);
+}
+
+.soc-table tbody tr {
+  border-bottom: 1px solid rgba(0,255,136,0.04);
+  transition: background 0.2s ease;
+}
+
+.soc-table tbody tr:hover {
+  background: rgba(0,255,136,0.04) !important;
+}
+
+.soc-table tbody td {
+  padding: 9px 12px;
+  font-family: var(--font-mono);
+  vertical-align: middle;
+}
+
+.payload-cell {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--accent) !important;
+  text-shadow: 0 0 8px rgba(0,255,136,0.3);
+  font-size: 11px;
+}
+
+.row-flash {
+  animation: rowFlash 1.5s ease-out;
+}
+
+@keyframes rowFlash {
+  0%   { background: rgba(0,255,136,0.2) !important; }
+  100% { background: transparent; }
+}

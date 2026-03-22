@@ -1,20 +1,19 @@
 {
-  "name": "cn1",
+  "name": "soc-nexus",
   "version": "1.0.0",
-  "description": "",
+  "description": "Advanced Security Operations Center Monitoring System",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "npx nodemon server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
+  "keywords": ["soc", "security", "monitoring", "threat-detection"],
+  "license": "MIT",
   "dependencies": {
-    "body-parser": "^2.2.2",
-    "express": "^5.2.1",
-    "express-session": "^1.19.0",
-    "sqlite3": "^6.0.1"
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "geoip-lite": "^1.4.10",
+    "socket.io": "^4.7.2",
+    "sqlite3": "^5.1.6"
   }
 }

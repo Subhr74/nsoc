@@ -1,78 +1,331 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOC System - Login</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        /* Specific styles for the login page */
-        .login-container {
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #0f172a;
-        }
-        .login-box {
-            background: #1e293b;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            width: 350px;
-            text-align: center;
-            border: 1px solid #334155;
-        }
-        .login-box h1 {
-            margin-bottom: 20px;
-            font-size: 24px;
-            color: #f8fafc;
-        }
-        .login-box input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 6px;
-            border: 1px solid #334155;
-            background: #0f172a;
-            color: white;
-            box-sizing: border-box;
-        }
-        .login-box button {
-            width: 100%;
-            padding: 12px;
-            background: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 10px;
-            transition: background 0.3s;
-        }
-        .login-box button:hover {
-            background: #2563eb;
-        }
-        .demo-creds {
-            margin-top: 20px;
-            font-size: 12px;
-            color: #94a3b8;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SOC — Secure Access</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── Login-specific styles ── */
+    body.login-page {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Animated background grid */
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0, 255, 136, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 136, 0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      z-index: 0;
+      animation: gridShift 20s linear infinite;
+    }
+
+    @keyframes gridShift {
+      0%   { background-position: 0 0; }
+      100% { background-position: 40px 40px; }
+    }
+
+    /* Scan-line overlay */
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.15) 2px,
+        rgba(0,0,0,0.15) 4px
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Corner decorations */
+    .corner {
+      position: fixed;
+      width: 80px;
+      height: 80px;
+      z-index: 2;
+    }
+    .corner::before,
+    .corner::after {
+      content: '';
+      position: absolute;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+    }
+    .corner::before { width: 2px; height: 40px; }
+    .corner::after  { width: 40px; height: 2px; }
+    .corner.tl { top: 20px; left: 20px; }
+    .corner.tl::before { top: 0; left: 0; }
+    .corner.tl::after  { top: 0; left: 0; }
+    .corner.tr { top: 20px; right: 20px; transform: scaleX(-1); }
+    .corner.tr::before { top: 0; left: 0; }
+    .corner.tr::after  { top: 0; left: 0; }
+    .corner.bl { bottom: 20px; left: 20px; transform: scaleY(-1); }
+    .corner.bl::before { top: 0; left: 0; }
+    .corner.bl::after  { top: 0; left: 0; }
+    .corner.br { bottom: 20px; right: 20px; transform: scale(-1); }
+    .corner.br::before { top: 0; left: 0; }
+    .corner.br::after  { top: 0; left: 0; }
+
+    /* Login card */
+    .login-wrapper {
+      position: relative;
+      z-index: 10;
+      width: 420px;
+      animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .login-card {
+      background: rgba(5, 12, 28, 0.92);
+      border: 1px solid rgba(0, 255, 136, 0.2);
+      border-radius: 4px;
+      padding: 48px 40px;
+      backdrop-filter: blur(20px);
+      box-shadow:
+        0 0 40px rgba(0, 255, 136, 0.08),
+        0 0 80px rgba(0, 100, 255, 0.05),
+        inset 0 1px 0 rgba(0, 255, 136, 0.1);
+    }
+
+    .login-logo {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .login-logo .shield {
+      font-size: 40px;
+      display: block;
+      margin-bottom: 12px;
+      filter: drop-shadow(0 0 12px var(--accent));
+    }
+
+    .login-logo .title {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 22px;
+      color: var(--accent);
+      letter-spacing: 6px;
+      text-shadow: 0 0 20px var(--accent);
+    }
+
+    .login-logo .subtitle {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 3px;
+      margin-top: 4px;
+    }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,255,136,0.3), transparent);
+      margin: 24px 0;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 3px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .form-group input {
+      width: 100%;
+      background: rgba(0, 255, 136, 0.04);
+      border: 1px solid rgba(0, 255, 136, 0.15);
+      border-radius: 3px;
+      padding: 12px 16px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 14px;
+      color: var(--text-primary);
+      outline: none;
+      transition: all 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    .form-group input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1), 0 0 15px rgba(0, 255, 136, 0.15);
+      background: rgba(0, 255, 136, 0.07);
+    }
+
+    .form-group input::placeholder {
+      color: rgba(148, 163, 184, 0.3);
+    }
+
+    .btn-login {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--accent);
+      border-radius: 3px;
+      padding: 14px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 4px;
+      color: var(--accent);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      margin-top: 8px;
+    }
+
+    .btn-login::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--accent);
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      z-index: 0;
+    }
+
+    .btn-login:hover::before { transform: translateX(0); }
+    .btn-login:hover { color: var(--bg-primary); box-shadow: 0 0 25px rgba(0,255,136,0.4); }
+    .btn-login span { position: relative; z-index: 1; }
+
+    .error-msg {
+      background: rgba(255, 59, 59, 0.12);
+      border: 1px solid rgba(255, 59, 59, 0.4);
+      border-radius: 3px;
+      padding: 10px 14px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      color: var(--critical);
+      text-align: center;
+      margin-bottom: 20px;
+      letter-spacing: 1px;
+      animation: shake 0.4s ease;
+    }
+
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%,60%  { transform: translateX(-6px); }
+      40%,80%  { transform: translateX(6px); }
+    }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 24px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 2px;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    /* Floating particles */
+    .particle {
+      position: fixed;
+      width: 2px;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 50%;
+      opacity: 0;
+      animation: floatParticle linear infinite;
+    }
+  </style>
 </head>
-<body>
-    <div class="login-container">
-        <div class="login-box">
-            <h1>🛡️ SOC Login</h1>
-            <form action="/login" method="POST">
-                <input type="text" name="username" placeholder="Username" required>
-                <input type="password" name="password" placeholder="Password" required>
-                <button type="submit">Login to Dashboard</button>
-            </form>
-            <div class="demo-creds">
-                <p>Demo: admin / password123</p>
-            </div>
+<body class="login-page">
+
+  <!-- Background effects -->
+  <div class="bg-grid"></div>
+  <div class="scanlines"></div>
+
+  <!-- Corners -->
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner bl"></div>
+  <div class="corner br"></div>
+
+  <!-- Login Card -->
+  <div class="login-wrapper">
+    <div class="login-card">
+      <div class="login-logo">
+        <span class="shield">🛡</span>
+        <div class="title">SOC NEXUS</div>
+        <div class="subtitle">SECURITY OPERATIONS CENTER</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Error message (shown on ?error=1) -->
+      <div id="errorMsg" style="display:none" class="error-msg">
+        ⚠ AUTHENTICATION FAILED — INVALID CREDENTIALS
+      </div>
+
+      <form method="POST" action="/login">
+        <div class="form-group">
+          <label>Operator ID</label>
+          <input type="text" name="username" placeholder="Enter operator ID" autocomplete="off" required />
         </div>
+        <div class="form-group">
+          <label>Access Code</label>
+          <input type="password" name="password" placeholder="••••••••••••" required />
+        </div>
+        <button type="submit" class="btn-login">
+          <span>▶ AUTHENTICATE ACCESS</span>
+        </button>
+      </form>
+
+      <div class="status-bar">
+        <div class="status-dot"></div>
+        <span>SYSTEM ONLINE · ENCRYPTED CHANNEL</span>
+      </div>
     </div>
+  </div>
+
+  <script>
+    // Show error if redirected with ?error=1
+    if (window.location.search.includes('error=1')) {
+      document.getElementById('errorMsg').style.display = 'block';
+    }
+
+    // Generate floating particles
+    for (let i = 0; i < 30; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.left = Math.random() * 100 + 'vw';
+      p.style.top = Math.random() * 100 + 'vh';
+      p.style.animationDuration = (8 + Math.random() * 12) + 's';
+      p.style.animationDelay = (Math.random() * 8) + 's';
+      p.style.opacity = Math.random() * 0.6;
+      document.body.appendChild(p);
+    }
+  </script>
 </body>
 </html>
